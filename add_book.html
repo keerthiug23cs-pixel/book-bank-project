@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Book</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+/* Glass Card */
+.container {
+    width: 350px;
+    padding: 35px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(0,255,200,0.3);
+    text-align: center;
+}
+
+h2 {
+    color: white;
+}
+
+/* Inputs */
+.inputBox {
+    margin: 15px 0;
+}
+
+.inputBox input, .inputBox select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(to right, #00ffcc, #00c9ff);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* Back Button */
+.back {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #555553;
+    color: black;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.back:hover {
+    background: #ffaa00;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>📚 Add Book</h2>
+
+<div class="inputBox">
+    <input type="text" id="name" placeholder="Book Name">
+</div>
+
+<div class="inputBox">
+    <input type="text" id="author" placeholder="Author Name">
+</div>
+
+<div class="inputBox">
+    <input type="number" id="qty" placeholder="Quantity">
+</div>
+
+<div class="inputBox">
+    <select id="category">
+        <option value="">Category</option>
+        <option>CSE</option>
+        <option>ECE</option>
+        <option>IT</option>
+    </select>
+</div>
+
+<button onclick="addBook()">Add Book 🚀</button>
+
+<!-- ✅ FIXED BACK BUTTON -->
+<button class="back" onclick="goHome()">⬅ Back to Home</button>
+
+</div>
+
+<script>
+
+function addBook() {
+
+    let name = document.getElementById("name").value;
+    let author = document.getElementById("author").value;
+    let qty = document.getElementById("qty").value;
+    let category = document.getElementById("category").value;
+
+    if(name=="" || author=="" || qty=="") {
+        alert("Fill all fields!");
+        return;
+    }
+
+    let book = { name, author, quantity: qty, category };
+
+    let books = JSON.parse(localStorage.getItem("books")) || [];
+    books.push(book);
+
+    localStorage.setItem("books", JSON.stringify(books));
+
+    alert("Book Added Successfully 🎉");
+
+    window.location.href = "dashboard.html";
+}
+
+/* ✅ BACK FUNCTION */
+function goHome() {
+    window.location.href = "dashboard.html";
+}
+
+</script>
+
+</body>
+</html>

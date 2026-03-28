@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Issue Book</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #141e30, #243b55);
+}
+
+.container {
+    width: 360px;
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0,255,255,0.3);
+}
+
+h2 {
+    color: white;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: none;
+}
+
+label {
+    color: white;
+    font-size: 14px;
+    text-align: left;
+    display: block;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(to right, #00f2fe, #4facfe);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #a19f97;
+    color: black;
+    text-decoration: none;
+    border-radius: 10px;
+}
+.back:hover {
+    background: #ffaa00;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>📖 Issue Book</h2>
+
+<label>📚 Select Book</label>
+<select id="bookList"></select>
+
+<label>👤 Student Name</label>
+<input type="text" id="student" placeholder="Enter student name">
+
+<label>📅 Issue Date</label>
+<input type="date" id="issueDate">
+
+<label>⏰ Return Date</label>
+<input type="date" id="returnDate">
+
+<p id="available" style="color:white;"></p>
+
+<button onclick="issueBook()">Issue Book 🚀</button>
+
+<button class="back" onclick="goBack()">⬅ Back</button>
+
+</div>
+
+<script>
+
+let books = JSON.parse(localStorage.getItem("books")) || [];
+let dropdown = document.getElementById("bookList");
+
+// Load books
+books.forEach((b, index) => {
+    let option = document.createElement("option");
+    option.value = index;
+    option.text = b.name + " (" + b.quantity + ")";
+    dropdown.appendChild(option);
+});
+
+// Show available quantity
+dropdown.addEventListener("change", () => {
+    let selected = books[dropdown.value];
+    document.getElementById("available").innerText =
+        "Available: " + selected.quantity;
+});
+
+// ✅ Auto set issue date (today)
+document.getElementById("issueDate").valueAsDate = new Date();
+
+// Issue book
+function issueBook() {
+
+    let student = document.getElementById("student").value;
+    let issueDate = document.getElementById("issueDate").value;
+    let returnDate = document.getElementById("returnDate").value;
+
+    let index = dropdown.value;
+    let book = books[index];
+
+    if(student=="" || issueDate=="" || returnDate=="") {
+        alert("Fill all fields!");
+        return;
+    }
+
+    if(book.quantity <= 0) {
+        alert("Book not available!");
+        return;
+    }
+
+    // reduce quantity
+    book.quantity--;
+
+    localStorage.setItem("books", JSON.stringify(books));
+
+    // store issued book
+    let issued = JSON.parse(localStorage.getItem("issued")) || [];
+    issued.push({
+        student,
+        book: book.name,
+        issueDate,
+        returnDate
+    });
+
+    localStorage.setItem("issued", JSON.stringify(issued));
+
+    alert("Book Issued Successfully 🎉");
+
+    location.reload();
+}
+
+// Back
+function goBack() {
+    window.location.href = "dashboard.html";
+}
+
+</script>
+
+</body>
+</html>

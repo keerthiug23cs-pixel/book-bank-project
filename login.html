@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Login</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+/* Glass Card */
+.container {
+    width: 350px;
+    padding: 40px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+/* Title */
+h2 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* Role buttons */
+.role {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.role button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: white;
+    border-bottom: 2px solid transparent;
+}
+
+.role .active {
+    border-bottom: 2px solid #00ffe5;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+}
+
+/* Button */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(to right, #00ffe5, #00ff99);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Error */
+#error {
+    color: red;
+    margin-top: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🚀 Smart Login</h2>
+
+<div class="role">
+    <button id="adminBtn" class="active" onclick="setRole('admin')">Admin</button>
+    <button id="studentBtn" onclick="setRole('student')">Student</button>
+</div>
+
+<input type="text" id="email" placeholder="Enter Email">
+<input type="password" id="password" placeholder="Enter Password">
+
+<button class="login-btn" onclick="login()">Login</button>
+
+<p id="error"></p>
+
+</div>
+
+<script>
+
+let role = "admin";
+
+function setRole(r) {
+    role = r;
+
+    document.getElementById("adminBtn").classList.remove("active");
+    document.getElementById("studentBtn").classList.remove("active");
+
+    if(r === "admin") {
+        document.getElementById("adminBtn").classList.add("active");
+    } else {
+        document.getElementById("studentBtn").classList.add("active");
+    }
+}
+
+function login() {
+
+    let email = document.getElementById("email").value.trim().toLowerCase();
+    let pass = document.getElementById("password").value;
+    let error = document.getElementById("error");
+
+    if(email === "" || pass === "") {
+        error.innerText = "⚠ Please fill all fields";
+        return;
+    }
+
+    if(role === "admin" && email === "admin@gmail.com" && pass === "1234") {
+        localStorage.setItem("user", "admin");
+        window.location.href = "dashboard.html";
+    }
+
+    else if(role === "student" && email === "student@gmail.com" && pass === "1234") {
+        localStorage.setItem("user", "student");
+        window.location.href = "view_books.html";
+    }
+
+    else {
+        error.innerText = "❌ Invalid Login";
+    }
+}
+
+</script>
+
+</body>
+</html>

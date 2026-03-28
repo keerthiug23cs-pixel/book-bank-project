@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Library Management</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+}
+
+.header {
+    text-align: center;
+    padding: 25px;
+}
+
+.search-box {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.search-box input, .search-box select {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    margin: 6px;
+    width: 290px;
+    font-size: 16px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 22px;
+    padding: 20px;
+}
+
+.card {
+    background: rgba(255,255,255,0.08);
+    padding: 22px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 18px rgba(0,255,200,0.2);
+    transition: all 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 25px #00ffcc;
+}
+
+.card h3 {
+    margin: 0 0 12px 0;
+    color: #00ffcc;
+    font-size: 1.2em;
+}
+
+.card p {
+    margin: 6px 0;
+    color: #ddd;
+}
+
+.status {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: inline-block;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+.available { background: #00cc66; }
+.low { background: #ffaa00; }
+.out { background: #ff4444; }
+
+button {
+    margin-top: 15px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: #00ffcc;
+    color: black;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #00cc99;
+    transform: scale(1.03);
+}
+
+/* Issued Books Section */
+.issued-section {
+    margin: 40px 20px 30px;
+    background: rgba(255,255,255,0.06);
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.issued-header {
+    text-align: center;
+    margin-bottom: 18px;
+    color: #00ffcc;
+    font-size: 1.5em;
+}
+
+.issued-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.issued-table th, .issued-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.issued-table th {
+    background: rgba(0,255,204,0.25);
+    color: #00ffcc;
+}
+
+.issued-table tr:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.no-issued {
+    text-align: center;
+    padding: 50px 20px;
+    color: #aaa;
+    font-size: 17px;
+}
+
+.back {
+    text-align: center;
+    margin: 30px;
+}
+
+.back a {
+    padding: 12px 28px;
+    background: #00ffcc;
+    color: black;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>📚 View & Issue Books</h2>
+</div>
+
+<div class="search-box">
+    <input type="text" id="search" placeholder="Search Book or Author..." onkeyup="filterBooks()">
+    <select id="category" onchange="filterBooks()">
+        <option value="">All Departments</option>
+        <option>CSE</option>
+        <option>ECE</option>
+        <option>EEE</option>
+        <option>AIDS</option>
+    </select>
+</div>
+
+<div class="container" id="bookList"></div>
+
+<!-- Issued Books History Section -->
+<div class="issued-section">
+    <h2 class="issued-header">📖 My Issued Books History</h2>
+    <table class="issued-table" id="issuedTable">
+        <thead>
+            <tr>
+                <th>Book Name</th>
+                <th>Author</th>
+                <th>Department</th>
+                <th>Issue Date</th>
+            </tr>
+        </thead>
+        <tbody id="issuedBody"></tbody>
+    </table>
+</div>
+
+<div class="back">
+    <a href="dashboard.html">⬅ Back to Dashboard</a>
+</div>
+
+<script>
+
+// ==================== 50 BOOKS ====================
+ let books = JSON.parse(localStorage.getItem("books")) || [];
+ if (books.length===0)
+ {
+    books=[
+    { name: "Introduction to Algorithms", author: "Thomas H. Cormen", category: "CSE", quantity: 15 },
+    { name: "Operating System Concepts", author: "Abraham Silberschatz", category: "CSE", quantity: 12 },
+    { name: "Computer Networks", author: "Andrew S. Tanenbaum", category: "CSE", quantity: 18 },
+    { name: "Database System Concepts", author: "Henry F. Korth", category: "CSE", quantity: 10 },
+    { name: "Clean Code", author: "Robert C. Martin", category: "CSE", quantity: 20 },
+    { name: "The Pragmatic Programmer", author: "Andrew Hunt", category: "CSE", quantity: 8 },
+    { name: "Computer Organization and Architecture", author: "William Stallings", category: "CSE", quantity: 14 },
+    { name: "Software Engineering", author: "Ian Sommerville", category: "CSE", quantity: 11 },
+    { name: "Discrete Mathematics and its Applications", author: "Kenneth H. Rosen", category: "CSE", quantity: 9 },
+    { name: "Object Oriented Programming with C++", author: "E. Balagurusamy", category: "CSE", quantity: 16 },
+
+    { name: "Digital Design", author: "M. Morris Mano", category: "ECE", quantity: 13 },
+    { name: "Microelectronic Circuits", author: "Adel S. Sedra", category: "ECE", quantity: 7 },
+    { name: "Signals and Systems", author: "Alan V. Oppenheim", category: "ECE", quantity: 12 },
+    { name: "Electronic Devices and Circuit Theory", author: "Robert L. Boylestad", category: "ECE", quantity: 10 },
+    { name: "Communication Systems", author: "Simon Haykin", category: "ECE", quantity: 9 },
+    { name: "Digital Signal Processing", author: "John G. Proakis", category: "ECE", quantity: 11 },
+    { name: "Embedded Systems", author: "Raj Kamal", category: "ECE", quantity: 6 },
+    { name: "VLSI Design", author: "Pucknell & Kamran Eshraghian", category: "ECE", quantity: 8 },
+    { name: "Analog Circuits", author: "Jacob Millman", category: "ECE", quantity: 5 },
+    { name: "Principles of Electromagnetics", author: "Matthew N.O. Sadiku", category: "ECE", quantity: 14 },
+
+    { name: "Engineering Circuit Analysis", author: "William H. Hayt", category: "EEE", quantity: 10 },
+    { name: "Electric Machinery Fundamentals", author: "Stephen J. Chapman", category: "EEE", quantity: 9 },
+    { name: "Power System Analysis", author: "John J. Grainger", category: "EEE", quantity: 7 },
+    { name: "The Art of Electronics", author: "Paul Horowitz", category: "EEE", quantity: 6 },
+    { name: "Modern Control Systems", author: "Richard C. Dorf", category: "EEE", quantity: 11 },
+    { name: "Fundamentals of Electric Circuits", author: "Charles Alexander", category: "EEE", quantity: 13 },
+    { name: "Electrical Machines", author: "P.S. Bimbhra", category: "EEE", quantity: 8 },
+    { name: "Control Systems Engineering", author: "Norman S. Nise", category: "EEE", quantity: 12 },
+    { name: "Solid State Electronic Devices", author: "Ben Streetman", category: "EEE", quantity: 5 },
+
+    { name: "Artificial Intelligence: A Modern Approach", author: "Stuart Russell", category: "AIDS", quantity: 14 },
+    { name: "Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow", author: "Aurélien Géron", category: "AIDS", quantity: 16 },
+    { name: "Deep Learning", author: "Ian Goodfellow", category: "AIDS", quantity: 8 },
+    { name: "Python for Data Analysis", author: "Wes McKinney", category: "AIDS", quantity: 15 },
+    { name: "Mathematics for Machine Learning", author: "Marc Peter Deisenroth", category: "AIDS", quantity: 10 },
+    { name: "Pattern Recognition and Machine Learning", author: "Christopher M. Bishop", category: "AIDS", quantity: 6 },
+    { name: "Machine Learning Yearning", author: "Andrew Ng", category: "AIDS", quantity: 9 },
+    { name: "Designing Data-Intensive Applications", author: "Martin Kleppmann", category: "AIDS", quantity: 11 },
+    { name: "Introduction to Data Science", author: "Laura Igual", category: "AIDS", quantity: 12 },
+    { name: "Reinforcement Learning: An Introduction", author: "Richard S. Sutton", category: "AIDS", quantity: 5 }
+];
+localStorage.setItem("bookes",JSON.stringify(books));
+ }
+// =====================================================
+
+function displayBooks(list) {
+    let output = "";
+
+    if(list.length === 0) {
+        document.getElementById("bookList").innerHTML = "<p style='text-align:center; font-size:18px; grid-column:1/-1;'>No Books Found ❌</p>";
+        return;
+    }
+
+    list.forEach((b, index) => {
+        let statusClass = b.quantity == 0 ? "out" : b.quantity <= 2 ? "low" : "available";
+        let statusText = b.quantity == 0 ? "Out of Stock ❌" : b.quantity <= 2 ? "Low Stock ⚠" : "Available ✔";
+
+        output += `
+        <div class="card">
+            <h3>${b.name}</h3>
+            <p>👨‍🏫 ${b.author}</p>
+            <p>📂 ${b.category}</p>
+            <p>📦 Qty: ${b.quantity}</p>
+            <span class="status ${statusClass}">${statusText}</span>
+            <button onclick="issueBook(${index})">Issue Book</button>
+        </div>`;
+    });
+
+    document.getElementById("bookList").innerHTML = output;
+}
+
+function filterBooks() {
+    let search = document.getElementById("search").value.toLowerCase();
+    let category = document.getElementById("category").value;
+
+    let filtered = books.filter(b => 
+        (b.name.toLowerCase().includes(search) || 
+         b.author.toLowerCase().includes(search) || 
+         b.category.toLowerCase().includes(search)) &&
+        (category === "" || b.category === category)
+    );
+
+    displayBooks(filtered);
+}
+
+function issueBook(i) {
+    if(books[i].quantity > 0) {
+        books[i].quantity--;
+
+        let issued = JSON.parse(localStorage.getItem("issued")) || [];
+        
+        issued.push({
+            name: books[i].name,
+            author: books[i].author,
+            category: books[i].category,
+            issueDate: new Date().toLocaleDateString('en-IN')
+        });
+
+        localStorage.setItem("books", JSON.stringify(books));
+        localStorage.setItem("issued", JSON.stringify(issued));
+
+        alert(`✅ "${books[i].name}" successfully issued!`);
+
+        displayBooks(books);        // Refresh available books
+        displayIssuedHistory();     // Refresh issued history
+    } else {
+        alert("❌ This book is Out of Stock!");
+    }
+}
+
+function displayIssuedHistory() {
+    let issued = JSON.parse(localStorage.getItem("issued")) || [];
+    let tbody = document.getElementById("issuedBody");
+
+    if(issued.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="no-issued">
+                    No books issued yet.<br>
+                    Click "Issue Book" on any book to see it here 📚
+                </td>
+            </tr>`;
+        return;
+    }
+
+    let rows = "";
+    issued.forEach((book) => {
+        rows += `
+            <tr>
+                <td>${book.name}</td>
+                <td>${book.author}</td>
+                <td>${book.category}</td>
+                <td>${book.issueDate}</td>
+            </tr>`;
+    });
+
+    tbody.innerHTML = rows;
+}
+
+// Initial Load
+displayBooks(books);
+displayIssuedHistory();
+
+</script>
+
+</body>
+</html>

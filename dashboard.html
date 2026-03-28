@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Dashboard</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+}
+
+/* Container */
+.container {
+    padding: 30px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Cards */
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 180px;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.card h2 {
+    font-size: 30px;
+}
+
+/* Progress */
+.progress {
+    width: 80%;
+    height: 10px;
+    background: #444;
+    margin: 20px auto;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #00ffcc;
+}
+
+/* Buttons */
+.buttons a {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 20px;
+    background: linear-gradient(to right, #00ffcc, #00c9ff);
+    color: black;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.buttons a:hover {
+    transform: scale(1.1);
+}
+
+/* Logout */
+.logout {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    color: #ff7675;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="logout" onclick="logout()">Logout 🔓</div>
+
+<div class="container">
+
+<h1 id="greet">Welcome 👋</h1>
+
+<div class="cards">
+
+<div class="card">
+    <h3>Total Books</h3>
+    <h2 id="total">0</h2>
+</div>
+
+<div class="card">
+    <h3>Issued</h3>
+    <h2 id="issued">0</h2>
+</div>
+
+<div class="card">
+    <h3>Available</h3>
+    <h2 id="available">0</h2>
+</div>
+
+</div>
+
+<!-- Progress Bar -->
+<div class="progress">
+    <div class="progress-bar" id="bar"></div>
+</div>
+
+<div class="buttons">
+    <a href="add_book.html">Add Book</a>
+    <a href="view_books.html">View Books</a>
+    <a href="issue_book.html">Issue Book</a>
+    <a href="issued_books.html">Issued History</a>
+</div>
+
+</div>
+
+<script>
+
+// Greeting
+let user = localStorage.getItem("userRole") || "User";
+document.getElementById("greet").innerText = "Hi " + user + " 👋";
+
+// Data
+let books = JSON.parse(localStorage.getItem("books")) || [];
+let issued = JSON.parse(localStorage.getItem("issued")) || [];
+
+let total = books.length;
+let issuedCount = issued.length;
+let available = total - issuedCount;
+
+// Animated count
+function animate(id, value) {
+    let i = 0;
+    let interval = setInterval(() => {
+        if(i >= value) clearInterval(interval);
+        document.getElementById(id).innerText = i;
+        i++;
+    }, 30);
+}
+
+animate("total", total);
+animate("issued", issuedCount);
+animate("available", available);
+
+// Progress bar
+let percent = total === 0 ? 0 : (issuedCount / total) * 100;
+document.getElementById("bar").style.width = percent + "%";
+
+// Logout
+function logout() {
+    localStorage.removeItem("userRole");
+    window.location.href = "login.html";
+}
+
+</script>
+
+</body>
+</html>

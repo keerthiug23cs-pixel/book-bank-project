@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Issued Books</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #1e1e2f;
+    color: white;
+    text-align: center;
+}
+
+table {
+    margin: auto;
+    width: 80%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ccc;
+}
+
+th {
+    background: #00c9ff;
+    color: black;
+}
+
+button {
+    padding: 10px;
+    margin: 10px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>📖 Issued Books History</h2>
+
+<button onclick="clearHistory()">🗑 Clear History</button>
+
+<table id="table">
+<tr>
+    <th>Student</th>
+    <th>Book</th>
+    <th>Issue Date</th>
+    <th>Return Date</th>
+</tr>
+</table>
+
+<a href="dashboard.html">⬅ Back</a>
+
+<script>
+
+let issued = JSON.parse(localStorage.getItem("issued")) || [];
+let table = document.getElementById("table");
+
+issued.forEach(b => {
+    let row = table.insertRow();
+    row.insertCell(0).innerText = b.student;
+    row.insertCell(1).innerText = b.book;
+    row.insertCell(2).innerText = b.issueDate;
+    row.insertCell(3).innerText = b.returnDate;
+});
+
+function clearHistory() {
+    localStorage.removeItem("issued");
+    alert("History Cleared");
+    location.reload();
+}
+
+</script>
+
+</body>
+</html>
